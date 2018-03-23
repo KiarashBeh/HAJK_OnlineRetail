@@ -33,14 +33,15 @@ namespace HAJK_OnlineRetail
                 SqlDataReader myReader = myQuery.ExecuteReader();
 
 
-                string Description;
+                string InvoiceDate;
                 while (myReader.Read())
                 {
-                    Description = (string)myReader["Description"];
+                    InvoiceDate = myReader["InvoiceDate"].ToString();
 
-                    MessageBox.Show(Description);
+                    MessageBox.Show(InvoiceDate);
 
-                    
+
+
                 }
 
 
