@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 namespace HAJK_OnlineRetail
 {
@@ -17,6 +18,42 @@ namespace HAJK_OnlineRetail
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
+
+
+            SqlConnection conn = new SqlConnection();
+
+            conn.ConnectionString = "Data Source=ALPHAG33K\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+
+            try //testar connectionen
+            {
+                conn.Open();
+
+                SqlCommand myQuery = new SqlCommand("select * from OnlineRetail", conn);
+
+                SqlDataReader myReader = myQuery.ExecuteReader();
+
+
+                string Description;
+                while (myReader.Read())
+                {
+                    Description = (string)myReader["Description"];
+
+                    MessageBox.Show(Description);
+
+                    
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+            finally
+            {
+                conn.Close();
+            }
+            Console.ReadLine();
         }
     }
 }

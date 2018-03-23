@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Data.SqlClient;
 
 namespace HAJK_OnlineRetail
 {
@@ -17,8 +18,11 @@ namespace HAJK_OnlineRetail
             InitializeComponent();
         }
 
+
         private void Form1_Load(object sender, EventArgs e)
         {
+
+
             //testing 123
         }
     }
