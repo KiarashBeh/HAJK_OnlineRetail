@@ -27,7 +27,7 @@ namespace TestingOnlineRetail
         {
             InitializeComponent();
 
-            conn.ConnectionString = "Data Source=LAPTOP-7AL6OH88\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;Connection timeout=10";
+            conn.ConnectionString = "Data Source=ALPHAG33K\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;Connection timeout=10";
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -115,7 +115,7 @@ namespace TestingOnlineRetail
                              where asd.Quantity > 0
                              //where asd.invoiceDate > StartDate
                              //where asd.invoiceDate < EndDate
-                             select new { sale = asd.Quantity * asd.UnitPrice, asd.InvoiceDate };
+                             select new { sale = (asd.Quantity * asd.UnitPrice), asd.InvoiceDate };
 
             foreach (var sales in datapoints)
             {
@@ -134,7 +134,7 @@ namespace TestingOnlineRetail
             
         }
 
-        private void Countries()
+        private void Countries() //metod för att fylla komboboxen med länder
         {
 
             World = GetList();
@@ -142,15 +142,21 @@ namespace TestingOnlineRetail
             var getCountries = World.Select(s => s.Country).Distinct();
             foreach (var x in getCountries)
             {
-                World2.Add(x);
+             
+                comboBox1.Items.Add(x);
             }
             ///World.Add(Enumerable.Cast<string>(getCountries).ToList());
-            comboBox1.Items.Add(valdLand);
+ 
         }
 
         private void comboBox1_DropDownClosed(object sender, EventArgs e)
         {
-          
+            valdLand = comboBox1.SelectedItem as string;
+        }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
