@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+using System.Windows.Forms.DataVisualization.Charting;
 
 namespace HAJK_OnlineRetail
 {
@@ -19,7 +20,7 @@ namespace HAJK_OnlineRetail
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Form1());
 
-
+            /*
             SqlConnection conn = new SqlConnection();
 
             conn.ConnectionString = "Data Source=ALPHAG33K\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=True;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
@@ -55,6 +56,7 @@ namespace HAJK_OnlineRetail
                 conn.Close();
             }
             Console.ReadLine();
+            */
         }
     }
-}
+        }
