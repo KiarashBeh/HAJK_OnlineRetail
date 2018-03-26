@@ -105,7 +105,7 @@ namespace TestingOnlineRetail
             
             DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
             DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
-            
+
 
             List<InvoiceRows> ChartList = GetList();
 
@@ -117,13 +117,37 @@ namespace TestingOnlineRetail
                              //where asd.invoiceDate < EndDate
                              select new { sale = asd.Quantity * asd.UnitPrice, asd.InvoiceDate };
 
+
             foreach (var sales in datapoints)
             {
                 chart1.Series["Series1"].Points.AddXY(sales.InvoiceDate, sales.sale);
             }
-            chart1.Series["Series1"].ChartType = SeriesChartType.Column;
+            //chart1.Series["Series1"].ChartType = SeriesChartType.Bar;
             //chart1.ChartAreas[0].AxisX.Minimum = StartDate.ToOADate();
             //chart1.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
+
+            List<InvoiceRows> ChartList2 = GetList();
+
+            var datapoints2 =   from asd in ChartList2
+                                group (asd.UnitPrice * asd.Quantity) by asd.Country //by new { asd.Country, SUM( asd.UnitPrice), asd.Quantity) }
+                                into g
+                                select g.Sum();
+
+            /*var datapoints3 = from gla in datapoints2
+                              select gla.Sum();*/
+
+           
+                              
+                              
+
+            
+
+
+
+
+
+
+
         }
 
         private void button1_Click(object sender, EventArgs e)
