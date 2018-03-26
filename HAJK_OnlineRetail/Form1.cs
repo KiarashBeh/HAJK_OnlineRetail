@@ -17,6 +17,11 @@ namespace TestingOnlineRetail
     public partial class Form1 : Form
     {
         SqlConnection conn = new SqlConnection();
+        List<InvoiceRows> World = new List<InvoiceRows>();
+        List<string> World2 = new List<string>();
+
+        private string valdLand;
+        //List<> getCountries;
 
         public Form1()
         {
@@ -27,7 +32,9 @@ namespace TestingOnlineRetail
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            InitData();            
+            InitData();
+            Countries();
+
         }
 
         private List<InvoiceRows> GetList()
@@ -37,7 +44,7 @@ namespace TestingOnlineRetail
         try
             {
                 conn.Open();
-                SqlCommand myCommand = new SqlCommand("select * from OnlineRetail;", conn);
+                SqlCommand myCommand = new SqlCommand("select * from OnlineRetail2;", conn);
 
                 SqlDataReader myReader = myCommand.ExecuteReader();
                 //MessageBox.Show("Connection fungerar");
@@ -50,6 +57,8 @@ namespace TestingOnlineRetail
                 float unitPrice;
                 int customerId;
                 string country;
+                string region;
+                int population;
 
                 while (myReader.Read())
                 {
@@ -61,12 +70,16 @@ namespace TestingOnlineRetail
                     float.TryParse(myReader["UnitPrice"].ToString(), out unitPrice);
                     int.TryParse(myReader["CustomerID"].ToString(), out customerId);
                     country = myReader["Country"].ToString();
+                    region = myReader["Region"].ToString();
+                    int.TryParse(myReader["Population"].ToString(), out population);
+
 
                     InvoiceRows temRows = new InvoiceRows(
                         invoiceNum, stockCode,
                         description, quantity,
                         invoiceDate, unitPrice,
-                        customerId, country);
+                        customerId, country,
+                        region, population);
 
                     fillOrderLines.Add(temRows);
                 }
@@ -97,34 +110,47 @@ namespace TestingOnlineRetail
             List<InvoiceRows> ChartList = GetList();
 
             var datapoints = from asd in ChartList
-                             where asd.country == "Sweden"
-                             where asd.unitPrice > 0
-                             where asd.quantity > 0
+                             where asd.Country == "Sweden"
+                             where asd.UnitPrice > 0
+                             where asd.Quantity > 0
                              //where asd.invoiceDate > StartDate
                              //where asd.invoiceDate < EndDate
-                             select new { sale = asd.quantity * asd.unitPrice, asd.invoiceDate };
+                             select new { sale = asd.Quantity * asd.UnitPrice, asd.InvoiceDate };
 
             foreach (var sales in datapoints)
             {
-                chart1.Series["Series1"].Points.AddXY(sales.invoiceDate, sales.sale);
+                chart1.Series["Series1"].Points.AddXY(sales.InvoiceDate, sales.sale);
             }
             chart1.Series["Series1"].ChartType = SeriesChartType.Column;
-            chart1.ChartAreas[0].AxisX.Minimum = StartDate.ToOADate();
-            chart1.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
+            //chart1.ChartAreas[0].AxisX.Minimum = StartDate.ToOADate();
+            //chart1.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
 
             FirstChart();
-            
+            Countries();
             
         }
 
         private void Countries()
         {
-            Country Sweden = new Country("Sweden", 90000000);
+
+            World = GetList();
+
+            var getCountries = World.Select(s => s.Country).Distinct();
+            foreach (var x in getCountries)
+            {
+                World2.Add(x);
+            }
+            ///World.Add(Enumerable.Cast<string>(getCountries).ToList());
+            comboBox1.Items.Add(valdLand);
         }
-      
+
+        private void comboBox1_DropDownClosed(object sender, EventArgs e)
+        {
+          
+        }
     }
 }
