@@ -102,7 +102,9 @@ namespace TestingOnlineRetail
         }
         private void FirstChart()
         {
-            
+            chart1.Series.Clear();
+            chart1.Series.Add("Series1");
+
             DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
             DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
             
@@ -110,28 +112,53 @@ namespace TestingOnlineRetail
             List<InvoiceRows> ChartList = GetList();
 
             var datapoints = from asd in ChartList
-                             where asd.Country == "Sweden"
-                             where asd.UnitPrice > 0
+                             where asd.Country == valdLand
+                             //where asd.UnitPrice > 0
                              where asd.Quantity > 0
                              //where asd.invoiceDate > StartDate
                              //where asd.invoiceDate < EndDate
-                             select new { sale = asd.Quantity * asd.UnitPrice, asd.InvoiceDate };
+                             select new { sale = (asd.Quantity * asd.UnitPrice), asd.InvoiceDate };
 
             foreach (var sales in datapoints)
             {
                 chart1.Series["Series1"].Points.AddXY(sales.InvoiceDate, sales.sale);
             }
-            chart1.Series["Series1"].ChartType = SeriesChartType.Column;
+            chart1.Series["Series1"].ChartType = SeriesChartType.Line;
             //chart1.ChartAreas[0].AxisX.Minimum = StartDate.ToOADate();
             //chart1.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
+        }
+
+        private void SecondChart()
+        {
+            List<InvoiceRows> Chartlist2 = GetList();
+
+            var datapoints = from abc in Chartlist2
+                             select new { abc.Country, abc.UnitPrice, abc.Quantity };
+
+            var meh = from bla in datapoints
+                      group bla by new { bla.Country } into hej
+                      select new { hej.Key.Country, hej.Sum(x => x.Quantity * x.UnitPrice)  };
+
+           
+            var top = (from asf in meh
+                       select asf).Take(5);
+            
+            foreach (var countr in top)
+            {
+                chart2.Series["Series1"].Points.AddXY(countr.Country, countr.sales);
+            }
+
+            chart2.Series["Series1"].ChartType = SeriesChartType.Column;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
 
             FirstChart();
-            Countries();
-            
+            SecondChart();
+
+
+
         }
 
         private void Countries()
@@ -140,17 +167,18 @@ namespace TestingOnlineRetail
             World = GetList();
 
             var getCountries = World.Select(s => s.Country).Distinct();
+
             foreach (var x in getCountries)
-            {
-                World2.Add(x);
+            {                               
+                comboBox1.Items.Add(x);
             }
             ///World.Add(Enumerable.Cast<string>(getCountries).ToList());
-            comboBox1.Items.Add(valdLand);
+            
         }
 
         private void comboBox1_DropDownClosed(object sender, EventArgs e)
         {
-          
+            valdLand = comboBox1.SelectedItem as string; 
         }
     }
 }
