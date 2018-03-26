@@ -17,11 +17,7 @@ namespace TestingOnlineRetail
     public partial class Form1 : Form
     {
         SqlConnection conn = new SqlConnection();
-        List<InvoiceRows> World = new List<InvoiceRows>();
-        List<string> World2 = new List<string>();
 
-        private string valdLand;
-        //List<> getCountries;
 
         public Form1()
         {
@@ -32,12 +28,12 @@ namespace TestingOnlineRetail
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            InitData();
+
             Countries();
 
         }
 
-        private List<InvoiceRows> GetList()
+        private List<InvoiceRows> GetList() //Metod för att fylla InvoiceRows från SQL. Returnerar en lista.
         {
             List<InvoiceRows> fillOrderLines = new List<InvoiceRows>();
         
@@ -49,7 +45,7 @@ namespace TestingOnlineRetail
                 SqlDataReader myReader = myCommand.ExecuteReader();
                 //MessageBox.Show("Connection fungerar");
 
-                int invoiceNum;
+                int invoiceNum;             //Variabler deklareras till listan som ska returneras
                 string stockCode;
                 string description;
                 int quantity;
@@ -60,7 +56,7 @@ namespace TestingOnlineRetail
                 string region;
                 int population;
 
-                while (myReader.Read())
+                while (myReader.Read())     //Läser från SQL och konverterar datatyperna
                 {
                     int.TryParse(myReader["invoiceNo"].ToString(), out invoiceNum);
                     stockCode =  myReader["StockCode"].ToString();
@@ -74,7 +70,7 @@ namespace TestingOnlineRetail
                     int.TryParse(myReader["Population"].ToString(), out population);
 
 
-                    InvoiceRows temRows = new InvoiceRows(
+                    InvoiceRows temRows = new InvoiceRows(          //Skapar nya objekt med den importerade datan ovan
                         invoiceNum, stockCode,
                         description, quantity,
                         invoiceDate, unitPrice,
@@ -110,7 +106,7 @@ namespace TestingOnlineRetail
             List<InvoiceRows> ChartList = GetList();
 
             var datapoints = from asd in ChartList
-                             where asd.Country == "Sweden"
+                             where asd.Country == valdLand
                              where asd.UnitPrice > 0
                              where asd.Quantity > 0
                              //where asd.invoiceDate > StartDate
@@ -129,15 +125,17 @@ namespace TestingOnlineRetail
         private void button1_Click(object sender, EventArgs e)
         {
 
+            InitData();
             FirstChart();
-            Countries();
-            
+
         }
 
-        private void Countries() //metod för att fylla komboboxen med länder
+        List<InvoiceRows> World = new List<InvoiceRows>();
+
+        private void Countries() //Metod för att fylla komboboxen med länder
         {
 
-            World = GetList();
+            World = GetList(); //Variabeln World anropar metoden GetList som anropar SQL databasen. Nedan filtrerar vi ut enbart länderna.
 
             var getCountries = World.Select(s => s.Country).Distinct();
             foreach (var x in getCountries)
@@ -148,6 +146,8 @@ namespace TestingOnlineRetail
             ///World.Add(Enumerable.Cast<string>(getCountries).ToList());
  
         }
+
+        private string valdLand;
 
         private void comboBox1_DropDownClosed(object sender, EventArgs e)
         {
