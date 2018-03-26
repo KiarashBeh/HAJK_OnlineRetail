@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("HAJK_OnlineRetail")]
+[assembly: AssemblyTitle("TestingOnlineRetail")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("HAJK_OnlineRetail")]
+[assembly: AssemblyProduct("TestingOnlineRetail")]
 [assembly: AssemblyCopyright("Copyright ©  2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("11ab19c3-627e-475b-9c8b-167f6ad61aa4")]
+[assembly: Guid("5f72f671-eb1d-4d08-9011-bd1b5f122aa2")]
 
 // Version information for an assembly consists of the following four values:
 //
