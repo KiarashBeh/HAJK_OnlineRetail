@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HAJK_OnlineRetail
+namespace TestingOnlineRetail
 {
     class InvoiceRows
     {
@@ -16,6 +16,8 @@ namespace HAJK_OnlineRetail
         private float price;
         private int custId;
         private string land;
+        private string region;
+        private int population;
 
 
         public InvoiceRows
@@ -27,7 +29,9 @@ namespace HAJK_OnlineRetail
             DateTime invoiceDate,
             float unitPrice,
             int customerId,
-            string country
+            string country,
+            string r,
+            int pop
             )
         {
             invNum = invoiceNum;
@@ -38,48 +42,53 @@ namespace HAJK_OnlineRetail
             price = unitPrice;
             custId = customerId;
             land = country;
+            Region = r;
+            Population = pop;
 
         }
 
-        public int invoiceNum
+        public int InvoiceNum
         {
             get { return invNum; }
             set { invNum = value; }
         }
-        public string stockCode
+        public string StockCode
         {
             get { return stkCode; }
             set { stkCode = value; }
         }
-        public string description
+        public string Description
         {
             get { return desc; }
             set { desc = value; }
         }
-        public int quantity
+        public int Quantity
         {
             get { return qty; }
             set { qty = value; }
         }
-        public DateTime invoiceDate
+        public DateTime InvoiceDate
         {
             get { return invDate; }
             set { invDate = value; }
         }
-        public float unitPrice
+        public float UnitPrice
         {
             get { return price; }
             set { price = value; }
         }
-        public int customerId
+        public int CustomerId
         {
             get { return custId; }
             set { custId = value; }
         }
-        public string country
+        public string Country
         {
             get { return land; }
             set { land = value; }
         }
+
+        public string Region { get => region; set => region = value; }
+        public int Population { get => population; set => population = value; }
     }
 }

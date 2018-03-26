@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using System.Data.SqlClient;
 using System.Windows.Forms.DataVisualization.Charting;
 
-namespace HAJK_OnlineRetail
+namespace TestingOnlineRetail
 {
     static class Program
     {
