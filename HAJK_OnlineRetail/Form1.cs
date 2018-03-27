@@ -28,9 +28,8 @@ namespace TestingOnlineRetail
 
         private void Form1_Load(object sender, EventArgs e)
         {
-
+            GetList();
             Countries();
-
         }
 
         private List<InvoiceRows> GetList() //Metod för att fylla InvoiceRows från SQL. Returnerar en lista.
@@ -92,13 +91,16 @@ namespace TestingOnlineRetail
             return fillOrderLines;
 
         }
+        /*
         private void InitData()
         {
             List<InvoiceRows> OrderLines1 = GetList();
         }
+        */
         private void FirstChart()
         {
-            
+            chart1.Series.Clear();
+            chart1.Series.Add("Series1");
             DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
             DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
             
@@ -125,7 +127,6 @@ namespace TestingOnlineRetail
         private void button1_Click(object sender, EventArgs e)
         {
 
-            InitData();
             FirstChart();
 
         }
@@ -139,8 +140,7 @@ namespace TestingOnlineRetail
 
             var getCountries = World.Select(s => s.Country).Distinct();
             foreach (var x in getCountries)
-            {
-             
+            {            
                 comboBox1.Items.Add(x);
             }
             ///World.Add(Enumerable.Cast<string>(getCountries).ToList());
