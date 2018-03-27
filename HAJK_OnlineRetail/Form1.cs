@@ -11,23 +11,22 @@ using System.Data.SqlClient;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace TestingOnlineRetail
-    //hej hej
-{
     
+{    
 
     public partial class Form1 : Form
     {
         SqlConnection conn = new SqlConnection();
-        List<InvoiceRows> World = new List<InvoiceRows>();
-        List<string> World2 = new List<string>();
-
+        //Olika variabler för olika val
+        private string firstDate;
+        private string lastDate;
         private string topOrBot;
         private string valdLand;
-
+        //SQL querie för top 5 respektive bot 5 länder per försäljning.
         private string topFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' desc";
         private string botFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' asc";
         private string valdTopBot;
-
+        //SQL querie för top 5 respektive bot 5 produkter.
         private string topProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] desc";
         private string botProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] asc";
         //private string topBotProd;
@@ -42,7 +41,7 @@ namespace TestingOnlineRetail
             conn.ConnectionString = "Data Source=LAPTOP-7AL6OH88\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
         }
 
-        private void InitData()
+        private void InitData()//Här samlas det som ska köras när Form1 laddas in.
         {
 
             valdTopBotProd = topProd;
@@ -59,6 +58,7 @@ namespace TestingOnlineRetail
             InitData();
         }
 
+        //Hämta top respektive bot länder beroende på vilket val man gjort (valdTopBot är kopplat till sql queries ovan).
         private List<InvoiceRows> getTopCountries()
         {
             List<InvoiceRows> topCountry = new List<InvoiceRows>();
@@ -94,6 +94,7 @@ namespace TestingOnlineRetail
             return topCountry;            
         }
 
+        //Hämta top respektive bot pordukter beroende på vilket val man gjort (valdTopBotProd är kopplat till sql queries ovan).
         private List<InvoiceRows> getTopProduct()
         {
             List<InvoiceRows> topProduct = new List<InvoiceRows>();
@@ -191,9 +192,10 @@ namespace TestingOnlineRetail
         }*/
 
 
-
+        //Första chart som visar top eller bot länder.
         private void FirstChart()
         {
+            //rensa och lägg till tom series och chart innan den laddas.
             chart1.Series.Clear();
             chart1.Series.Add("Series1");
             chart1.ChartAreas.Clear();
@@ -217,8 +219,10 @@ namespace TestingOnlineRetail
             //chart1.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
         }
         
+        //Andra charten som visar top eller bot produkter
         private void SecondChart()
         {
+            //rensa och lägg till tom series och chart innan den laddas.
             chart2.Series.Clear();
             chart2.Series.Add("Series1");
             chart2.ChartAreas.Clear();
@@ -248,17 +252,16 @@ namespace TestingOnlineRetail
             
         }       
 
+        //Välj land i dropdown lista och sedan sätts värdet till variabeln valdLand som string
         private void comboBox1_DropDownClosed(object sender, EventArgs e)
         {
             valdLand = comboBox1.SelectedItem as string; 
         }
 
+        //Välj antingen bot eller top för att bestämma vilken querie som ska köras och sedan uppdateras chartsen.
         private void comboBox2_DropDownClosed(object sender, EventArgs e)
         {
             topOrBot = comboBox2.SelectedItem as string;
-            
-            
-
 
             if (topOrBot == "Top5")
             {
