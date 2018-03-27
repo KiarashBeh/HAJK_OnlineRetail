@@ -39,10 +39,7 @@ namespace HAJK_OnlineRetail
                     region
                     population
 
-
-
                     InvoiceRows listRow = new InvoiceRows();
-
 
                     outList.Add(listRow);
                 }
