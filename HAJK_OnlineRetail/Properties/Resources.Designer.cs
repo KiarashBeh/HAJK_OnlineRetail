@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OnlineRetail.Properties
+namespace HAJK_OnlineRetail.Properties
 {
 
 

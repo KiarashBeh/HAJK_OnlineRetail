@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27428.2002
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineRetail", "HAJK_OnlineRetail\OnlineRetail.csproj", "{11AB19C3-627E-475B-9C8B-167F6AD61AA4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HAJK_OnlineRetail", "HAJK_OnlineRetail\HAJK_OnlineRetail.csproj", "{11AB19C3-627E-475B-9C8B-167F6AD61AA4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
