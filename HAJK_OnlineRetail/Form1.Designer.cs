@@ -1,4 +1,4 @@
-﻿namespace HAJK_OnlineRetail
+﻿namespace OnlineRetail
 {
     partial class Form1
     {
