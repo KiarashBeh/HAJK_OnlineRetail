@@ -47,6 +47,27 @@ namespace TestingOnlineRetail
 
         }
 
+        public InvoiceRows 
+            (
+            string country,
+            float unitPrice
+            )
+        {
+            land = country;
+            price = unitPrice;
+        }
+
+        public InvoiceRows
+            (
+            float unitPrice,
+            string description
+            
+            )
+        {
+            desc = description;
+            price = unitPrice;
+        }
+
         public int InvoiceNum
         {
             get { return invNum; }
