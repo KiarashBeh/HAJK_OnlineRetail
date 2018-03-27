@@ -20,16 +20,18 @@ namespace TestingOnlineRetail
         SqlConnection conn = new SqlConnection();
         List<InvoiceRows> World = new List<InvoiceRows>();
         List<string> World2 = new List<string>();
-        private string topFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' desc";
-        private string botFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' asc";
+
         private string topOrBot;
         private string valdLand;
+
+        private string topFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' desc";
+        private string botFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' asc";
         private string valdTopBot;
 
         private string topProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] desc";
         private string botProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] asc";
         //private string topBotProd;
-        private string valdTopBotProd;
+        string valdTopBotProd;
 
 
 
@@ -37,13 +39,24 @@ namespace TestingOnlineRetail
         {
             InitializeComponent();
 
-            conn.ConnectionString = "Data Source=LAPTOP-7AL6OH88\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;Connection timeout=10";
+            conn.ConnectionString = "Data Source=LAPTOP-7AL6OH88\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
+        }
+
+        private void InitData()
+        {
+
+            valdTopBotProd = topProd;
+            valdTopBot = topFive;
+            getTopCountries();
+            getTopProduct();
+
+            FirstChart();
+            SecondChart();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            getTopCountries();
-
+            InitData();
         }
 
         private List<InvoiceRows> getTopCountries()
@@ -99,7 +112,7 @@ namespace TestingOnlineRetail
                     float.TryParse(myReader["Quantity"].ToString(), out unitPrice);
                     Description = myReader["Description"].ToString();
 
-                    InvoiceRows tempRows = new InvoiceRows(Description, unitPrice);
+                    InvoiceRows tempRows = new InvoiceRows(unitPrice, Description);
 
                     topProduct.Add(tempRows);
                 }
@@ -177,10 +190,7 @@ namespace TestingOnlineRetail
 
         }*/
 
-        private void InitData()
-        {
-            List<InvoiceRows> OrderLines1 = getTopCountries();
-        }
+
 
         private void FirstChart()
         {
@@ -211,6 +221,8 @@ namespace TestingOnlineRetail
         {
             chart2.Series.Clear();
             chart2.Series.Add("Series1");
+            chart2.ChartAreas.Clear();
+            chart2.ChartAreas.Add("ChartArea1");
 
             DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
             DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
@@ -218,7 +230,7 @@ namespace TestingOnlineRetail
 
             List<InvoiceRows> ChartList = getTopProduct();
 
-            var datapoints = from asd in ChartList                             
+            var datapoints = from asd in ChartList
                              select new { asd.Description, asd.UnitPrice };
 
             foreach (var sales in datapoints)
@@ -245,8 +257,7 @@ namespace TestingOnlineRetail
         {
             topOrBot = comboBox2.SelectedItem as string;
             
-            FirstChart();
-            SecondChart();
+            
 
 
             if (topOrBot == "Top5")
@@ -259,6 +270,9 @@ namespace TestingOnlineRetail
                 valdTopBot = botFive;
                 valdTopBotProd = botProd;
             }
+
+            FirstChart();
+            SecondChart();
         }
     }
 }
