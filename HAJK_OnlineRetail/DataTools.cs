@@ -36,6 +36,8 @@ namespace HAJK_OnlineRetail
                     unitPrice
                     customerId
                     country
+                    region
+                    population
 
 
 
