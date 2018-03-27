@@ -11,39 +11,118 @@ using System.Data.SqlClient;
 using System.Windows.Forms.DataVisualization.Charting;
 
 namespace TestingOnlineRetail
-
+//hej hej
 {
-    
+
 
     public partial class Form1 : Form
     {
         SqlConnection conn = new SqlConnection();
         List<InvoiceRows> World = new List<InvoiceRows>();
         List<string> World2 = new List<string>();
-
+        private string topFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' desc";
+        private string botFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' asc";
+        private string topOrBot;
         private string valdLand;
-        //List<> getCountries;
+        private string valdTopBot;
+
+        private string topProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] desc";
+        private string botProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] asc";
+        //private string topBotProd;
+        private string valdTopBotProd;
+
+
 
         public Form1()
         {
             InitializeComponent();
 
-            conn.ConnectionString = "Data Source=KiarashPc;Initial Catalog=OnlineRetail;Integrated Security=True;Connection timeout=10";
+            conn.ConnectionString = "Data Source=LAPTOP-7AL6OH88\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;Connection timeout=10";
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            InitData();
-            Countries();
+            getTopCountries();
 
         }
 
-        private List<InvoiceRows> GetList()
+        private List<InvoiceRows> getTopCountries()
+        {
+            List<InvoiceRows> topCountry = new List<InvoiceRows>();
+
+            try
+            {
+                conn.Open();
+                SqlCommand myCommand2 = new SqlCommand(valdTopBot, conn);
+                SqlDataReader myReader2 = myCommand2.ExecuteReader();
+
+                float unitPrice;
+                string Country;
+
+                while (myReader2.Read())
+                {
+                    float.TryParse(myReader2["Total Sales"].ToString(), out unitPrice);
+                    Country = myReader2["Country"].ToString();
+
+                    InvoiceRows tempRows = new InvoiceRows(Country, unitPrice);
+
+                    topCountry.Add(tempRows);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return topCountry;
+        }
+
+        private List<InvoiceRows> getTopProduct()
+        {
+            List<InvoiceRows> topProduct = new List<InvoiceRows>();
+
+            try
+            {
+                conn.Open();
+                SqlCommand myCommand = new SqlCommand(valdTopBotProd, conn);
+                SqlDataReader myReader = myCommand.ExecuteReader();
+
+                float unitPrice;
+                string Description;
+
+                while (myReader.Read())
+                {
+                    float.TryParse(myReader["Quantity"].ToString(), out unitPrice);
+                    Description = myReader["Description"].ToString();
+
+                    InvoiceRows tempRows = new InvoiceRows(Description, unitPrice);
+
+                    topProduct.Add(tempRows);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return topProduct;
+        }
+
+
+        /*private List<InvoiceRows> GetList()
         {
             List<InvoiceRows> fillOrderLines = new List<InvoiceRows>();
         
         try
-            {
+            { 
                 conn.Open();
                 SqlCommand myCommand = new SqlCommand("select * from OnlineRetail2;", conn);
 
@@ -84,7 +163,7 @@ namespace TestingOnlineRetail
 
                     fillOrderLines.Add(temRows);
                 }
-}
+            }
             catch (Exception e)
             {
 
@@ -96,87 +175,90 @@ namespace TestingOnlineRetail
             }
             return fillOrderLines;
 
-        }
+        }*/
+
         private void InitData()
         {
-            List<InvoiceRows> OrderLines1 = GetList();
+            List<InvoiceRows> OrderLines1 = getTopCountries();
         }
+
         private void FirstChart()
         {
-            
+            chart1.Series.Clear();
+            chart1.Series.Add("Series1");
+            chart1.ChartAreas.Clear();
+            chart1.ChartAreas.Add("ChartArea1");
+
             DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
             DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
 
 
-            List<InvoiceRows> ChartList = GetList();
+            List<InvoiceRows> ChartList = getTopCountries();
 
             var datapoints = from asd in ChartList
-                             where asd.Country == valdLand
-                             where asd.UnitPrice > 0
-                             where asd.Quantity > 0
-                             //where asd.invoiceDate > StartDate
-                             //where asd.invoiceDate < EndDate
-                             select new { sale = asd.Quantity * asd.UnitPrice, asd.InvoiceDate };
-
+                             select new { asd.Country, asd.UnitPrice };
 
             foreach (var sales in datapoints)
             {
-                chart1.Series["Series1"].Points.AddXY(sales.InvoiceDate, sales.sale);
+                chart1.Series["Series1"].Points.AddXY(sales.Country, sales.UnitPrice);
             }
-            //chart1.Series["Series1"].ChartType = SeriesChartType.Bar;
+            chart1.Series["Series1"].ChartType = SeriesChartType.Column;
             //chart1.ChartAreas[0].AxisX.Minimum = StartDate.ToOADate();
             //chart1.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
+        }
 
-            List<InvoiceRows> ChartList2 = GetList();
+        private void SecondChart()
+        {
+            chart2.Series.Clear();
+            chart2.Series.Add("Series1");
 
-            var datapoints2 =   from asd in ChartList2
-                                group (asd.UnitPrice * asd.Quantity) by asd.Country //by new { asd.Country, SUM( asd.UnitPrice), asd.Quantity) }
-                                into g
-                                select g.Sum();
-
-            /*var datapoints3 = from gla in datapoints2
-                              select gla.Sum();*/
-
-           
-                              
-                              
-
-            
+            DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
+            DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
 
 
+            List<InvoiceRows> ChartList = getTopProduct();
 
+            var datapoints = from asd in ChartList
+                             select new { asd.Description, asd.UnitPrice };
 
-
-
-
+            foreach (var sales in datapoints)
+            {
+                chart2.Series["Series1"].Points.AddXY(sales.Description, sales.UnitPrice);
+            }
+            chart2.Series["Series1"].ChartType = SeriesChartType.Column;
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
 
             FirstChart();
-            Countries();
-            
-        }
+            SecondChart();
 
-        private void Countries()
-        {
-
-            World = GetList();
-
-            var getCountries = World.Select(s => s.Country).Distinct();
-            foreach (var x in getCountries)
-            {
-                World2.Add(x);
-                comboBox1.Items.Add(x);
-            }
-            ///World.Add(Enumerable.Cast<string>(getCountries).ToList());
-            
         }
 
         private void comboBox1_DropDownClosed(object sender, EventArgs e)
         {
-            valdLand = comboBox1.SelectedItem.ToString();
+            valdLand = comboBox1.SelectedItem as string;
+        }
+
+        private void comboBox2_DropDownClosed(object sender, EventArgs e)
+        {
+            topOrBot = comboBox2.SelectedItem as string;
+
+            FirstChart();
+            SecondChart();
+
+
+            if (topOrBot == "Top5")
+            {
+                valdTopBot = topFive;
+                valdTopBotProd = topProd;
+            }
+            else
+            {
+                valdTopBot = botFive;
+                valdTopBotProd = botProd;
+            }
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
