@@ -18,6 +18,11 @@ namespace TestingOnlineRetail
         private string land;
         private string region;
         private int population;
+        private int year;
+        private int month;
+        private int day;
+        private int allDays;
+
 
 
         public InvoiceRows
@@ -68,6 +73,18 @@ namespace TestingOnlineRetail
             price = unitPrice;
         }
 
+        public InvoiceRows
+            (
+            int day,
+            float sales,
+            int pop
+            )
+        {
+            AllDays = day;
+            price = sales;
+            
+        }
+
         public int InvoiceNum
         {
             get { return invNum; }
@@ -111,5 +128,9 @@ namespace TestingOnlineRetail
 
         public string Region { get => region; set => region = value; }
         public int Population { get => population; set => population = value; }
+        public int Year { get => year; set => year = value; }
+        public int Month { get => month; set => month = value; }
+        public int Day { get => day; set => day = value; }
+        public int AllDays { get => allDays; set => allDays = value; }
     }
 }

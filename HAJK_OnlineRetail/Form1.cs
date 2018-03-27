@@ -12,7 +12,7 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace TestingOnlineRetail
     
-{    
+{
 
     public partial class Form1 : Form
     {
@@ -29,9 +29,9 @@ namespace TestingOnlineRetail
         //SQL querie för top 5 respektive bot 5 produkter.
         private string topProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] desc";
         private string botProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] asc";
-        //private string topBotProd;
         string valdTopBotProd;
-
+        //SQL querie för att få fram total försäljning per år och månad.
+        private string salesPerYear = "Select cast(datepart(year, InvoiceDate) as varchar) + '.' + cast(datepart(month, InvoiceDate) as varchar) + '.' + cast(datepart(day, InvoiceDate)as varchar) as dagar, sum(Quantity*UnitPrice) as 'TotalSales' from OnlineRetail2 group by datepart(month, InvoiceDate),datepart(year, InvoiceDate),datepart(day, InvoiceDate) order by datepart(year, InvoiceDate), datepart(month, InvoiceDate),datepart(day, InvoiceDate)";
 
 
         public Form1()
@@ -48,15 +48,58 @@ namespace TestingOnlineRetail
             valdTopBot = topFive;
             getTopCountries();
             getTopProduct();
+            getSalesPerYear();
 
             FirstChart();
             SecondChart();
+            ThirdChart();
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             InitData();
         }
+
+        private List<InvoiceRows> getSalesPerYear()
+            {
+            List<InvoiceRows> totalSales = new List<InvoiceRows>();
+
+            try
+            {
+                conn.Open();
+                SqlCommand myCommand2 = new SqlCommand(salesPerYear, conn);
+                SqlDataReader myReader2 = myCommand2.ExecuteReader();
+
+                int years;
+                int months;
+                int days;
+                float sales;
+                int allDays;
+
+                while (myReader2.Read())
+                {
+                    //int.TryParse(myReader2["artal"].ToString(), out years);
+                    //int.TryParse(myReader2["manad"].ToString(), out months);
+                    //int.TryParse(myReader2["dag"].ToString(), out days);
+                    int.TryParse(myReader2["dagar"].ToString(), out allDays);
+                    float.TryParse(myReader2["TotalSales"].ToString(), out sales);
+
+                    InvoiceRows tempRows = new InvoiceRows(allDays.ToString(), sales);
+
+                    totalSales.Add(tempRows);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+            return totalSales;
+        }
+            
 
         //Hämta top respektive bot länder beroende på vilket val man gjort (valdTopBot är kopplat till sql queries ovan).
         private List<InvoiceRows> getTopCountries()
@@ -242,6 +285,20 @@ namespace TestingOnlineRetail
                 chart2.Series["Series1"].Points.AddXY(sales.Description, sales.UnitPrice);
             }
             chart2.Series["Series1"].ChartType = SeriesChartType.Column;
+        }
+
+        private void ThirdChart()
+        {
+            List<InvoiceRows> salesList = getSalesPerYear();
+            //Här pysslar jag just nu med om det går att få fram 
+            var datapoints = from asgag in salesList
+                             select new {  asgag.AllDays, asgag.UnitPrice };
+
+            foreach (var sales in datapoints)
+            {
+                chart3.Series["Series1"].Points.AddXY(sales.AllDays, sales.UnitPrice);
+            }
+            chart3.Series["Series1"].ChartType = SeriesChartType.Line;
         }
 
         private void button1_Click(object sender, EventArgs e)
