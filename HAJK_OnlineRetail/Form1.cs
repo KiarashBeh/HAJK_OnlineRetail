@@ -31,19 +31,73 @@ namespace TestingOnlineRetail
         //private string topBotProd;
         private string valdTopBotProd;
 
-
+        private string totalSaleForEachCountry = "SELECT Country, SUM(quantity * UnitPrice) As 'Total Sale'  FROM[OnlineRetail].[dbo].[OnlineRetail2] group by Country order by[Total Sale] Desc";
+        SqlDataReader myReader;
 
         public Form1()
         {
             InitializeComponent();
 
-            conn.ConnectionString = "Data Source=LAPTOP-7AL6OH88\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;Connection timeout=10";
+            conn.ConnectionString = "Data Source=KiarashPc;Initial Catalog=OnlineRetail;Integrated Security=True;Connection timeout=10";
         }
+        private void InitData()
+        {
+            
+            valdTopBot = topFive;
+            valdTopBotProd = topProd;
 
+            getTopCountries();
+            getTopProduct();
+
+            FirstChart();
+            SecondChart();
+
+        }
         private void Form1_Load(object sender, EventArgs e)
         {
-            getTopCountries();
+            InitData();
+            
+        }
 
+        private SqlDataReader openConnection(string Name)
+        {
+            conn.Open();
+            SqlCommand myCommand2 = new SqlCommand(Name, conn);
+            myReader = myCommand2.ExecuteReader();
+            return myReader;
+        }
+
+        private List<InvoiceRows> getTotalSale()
+        {
+            List<InvoiceRows> totalSale = new List<InvoiceRows>();
+
+            try
+            {
+                openConnection(totalSaleForEachCountry);
+
+                float unitPrice;
+                string Country;
+
+                while (myReader.Read())
+                {
+                    Country = myReader["Country"].ToString();
+                    float.TryParse(myReader["Total Sales"].ToString(), out unitPrice);
+
+                    InvoiceRows tempRows = new InvoiceRows(Country, unitPrice);
+
+                    totalSale.Add(tempRows);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return totalSale;
         }
 
         private List<InvoiceRows> getTopCountries()
@@ -99,7 +153,7 @@ namespace TestingOnlineRetail
                     float.TryParse(myReader["Quantity"].ToString(), out unitPrice);
                     Description = myReader["Description"].ToString();
 
-                    InvoiceRows tempRows = new InvoiceRows(Description, unitPrice);
+                    InvoiceRows tempRows = new InvoiceRows(unitPrice, Description);
 
                     topProduct.Add(tempRows);
                 }
@@ -177,10 +231,7 @@ namespace TestingOnlineRetail
 
         }*/
 
-        private void InitData()
-        {
-            List<InvoiceRows> OrderLines1 = getTopCountries();
-        }
+
 
         private void FirstChart()
         {
@@ -211,6 +262,8 @@ namespace TestingOnlineRetail
         {
             chart2.Series.Clear();
             chart2.Series.Add("Series1");
+            chart2.ChartAreas.Clear();
+            chart2.ChartAreas.Add("ChartArea1");
 
             DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
             DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
@@ -245,10 +298,7 @@ namespace TestingOnlineRetail
         {
             topOrBot = comboBox2.SelectedItem as string;
 
-            FirstChart();
-            SecondChart();
-
-
+           
             if (topOrBot == "Top5")
             {
                 valdTopBot = topFive;
@@ -259,6 +309,9 @@ namespace TestingOnlineRetail
                 valdTopBot = botFive;
                 valdTopBotProd = botProd;
             }
+
+            FirstChart();
+            SecondChart();
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
