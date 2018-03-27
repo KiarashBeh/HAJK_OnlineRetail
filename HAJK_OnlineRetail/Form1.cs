@@ -177,5 +177,10 @@ namespace TestingOnlineRetail
         {
             valdLand = comboBox1.SelectedItem.ToString();
         }
+
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
     }
 }
