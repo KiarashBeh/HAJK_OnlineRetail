@@ -10,7 +10,10 @@ using System.Windows.Forms;
 
 namespace HAJK_OnlineRetail
 {
-        public List<InvoiceRows> GetInvoiceRows(string inputQuery)
+    public static class DataTools
+    {
+
+        internal static List<InvoiceRows> GetInvoiceRows(string inputQuery)
         {
             List<InvoiceRows> outList = new List<InvoiceRows>();
             string sConnectionString = "Data Source =LAPTOP2\\TESTSQL; Initial Catalog =OnlineRetail; Integrated Security =True;";
@@ -54,4 +57,5 @@ namespace HAJK_OnlineRetail
             }
             return outList;
         }
+    }
 }
