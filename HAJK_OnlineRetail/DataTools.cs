@@ -15,7 +15,8 @@ namespace HAJK_OnlineRetail
 
         internal static List<InvoiceRows> GetInvoiceRows(string inputQuery)
         {
-            List<InvoiceRows> outList = new List<InvoiceRows>();
+            List<InvoiceRows> listRow = new List<InvoiceRows>();
+
             string sConnectionString = "Data Source =LAPTOP2\\TESTSQL; Initial Catalog =OnlineRetail; Integrated Security =True;";
             SqlConnection sqlConnection = new SqlConnection(sConnectionString);
             try
@@ -28,20 +29,21 @@ namespace HAJK_OnlineRetail
 
                 foreach (DataRow dr in dataSet.Tables[0].Rows)
                 {
-                    invoiceNum
-                    stockCode
-                    description
-                    quantity
-                    invoiceDate
-                    unitPrice
-                    customerId
-                    country
-                    region
-                    population
+                    int invoiceNum = Convert.ToInt32(dr["InvoiceNo"]);
+                    string stockCode = Convert.ToString(dr["StockCode"]);
+                    string description = Convert.ToString(dr["Description"]);
+                    int quantity = Convert.ToInt32(dr["Quantity"]);
+                    DateTime invoiceDate = Convert.ToDateTime(dr["InvoiceDate"]);
+                    float unitPrice = float.Parse((dr["UnitPrice"]).ToString());
+                    int customerId = Convert.ToInt32(dr["CustomerID"]);
+                    string country = Convert.ToString(dr["Country"]);
+                    string region = Convert.ToString(dr["Region"]);
+                    int population = Convert.ToInt32(dr["population"]);
 
-                    InvoiceRows listRow = new InvoiceRows();
+                    InvoiceRows currentRow = new InvoiceRows(invoiceNum,stockCode,description,quantity,invoiceDate,unitPrice,customerId,
+                                                            country,region,population);
 
-                    outList.Add(listRow);
+                    listRow.Add(currentRow);
                 }
             }
             catch (Exception ex)
@@ -54,7 +56,7 @@ namespace HAJK_OnlineRetail
             {
                 sqlConnection.Close();
             }
-            return outList;
+            return listRow;
         }
     }
 }

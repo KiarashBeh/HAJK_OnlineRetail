@@ -20,7 +20,7 @@ namespace HAJK_OnlineRetail
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            List<InvoiceRows> InvoiceData = DataTools.GetInvoiceRows("jdkjfhkjsdhf");
+            List<InvoiceRows> InvoiceData = DataTools.GetInvoiceRows("SELECT * FROM dbo.OnlineRetail2");
         }
 
     }
