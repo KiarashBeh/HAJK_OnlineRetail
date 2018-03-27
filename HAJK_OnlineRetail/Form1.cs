@@ -30,8 +30,9 @@ namespace TestingOnlineRetail
         private string botProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] asc";
         //private string topBotProd;
         private string valdTopBotProd;
+        private double totalSalePerPopulation;
 
-        private string totalSaleForEachCountry = "SELECT Country, SUM(quantity * UnitPrice) As 'Total Sale'  FROM[OnlineRetail].[dbo].[OnlineRetail2] group by Country order by[Total Sale] Desc";
+        private string totalSaleForEachCountry = "SELECT Country, Population, SUM(quantity * UnitPrice)/Population As 'TotalSalePerPopulation' FROM[OnlineRetail].[dbo].[OnlineRetail2] group by Population, Country order by [TotalSalePerPopulation]  Desc";
         SqlDataReader myReader;
 
         public Form1()
@@ -52,6 +53,9 @@ namespace TestingOnlineRetail
             FirstChart();
             SecondChart();
 
+            KpiTotalSalePerPopulation();
+            
+
         }
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -67,23 +71,26 @@ namespace TestingOnlineRetail
             return myReader;
         }
 
-        private List<InvoiceRows> getTotalSale()
+        private List<InvoiceRows> getTotalSalePerPop()
         {
             List<InvoiceRows> totalSale = new List<InvoiceRows>();
 
             try
             {
-                openConnection(totalSaleForEachCountry);
+                //openConnection(totalSaleForEachCountry);
+                conn.Open();
+                SqlCommand myCommand2 = new SqlCommand(totalSaleForEachCountry, conn);
+                myReader = myCommand2.ExecuteReader();
 
-                float unitPrice;
+                float totalSale1;
                 string Country;
 
                 while (myReader.Read())
                 {
                     Country = myReader["Country"].ToString();
-                    float.TryParse(myReader["Total Sales"].ToString(), out unitPrice);
+                    float.TryParse(myReader["TotalSalePerPopulation"].ToString(), out totalSale1);
 
-                    InvoiceRows tempRows = new InvoiceRows(Country, unitPrice);
+                    InvoiceRows tempRows = new InvoiceRows(totalSale1, Country, "sss");
 
                     totalSale.Add(tempRows);
                 }
@@ -98,6 +105,20 @@ namespace TestingOnlineRetail
             }
 
             return totalSale;
+        }
+
+        private void KpiTotalSalePerPopulation()
+        {
+            List<InvoiceRows> ChartList1 = getTotalSalePerPop();
+
+            foreach (var item in ChartList1)
+            {
+                if (item.Country.ToString() == valdLand)
+                    totalSalePerPopulation = item.TotalPricePerPop;
+                
+            }
+            
+
         }
 
         private List<InvoiceRows> getTopCountries()
@@ -292,6 +313,7 @@ namespace TestingOnlineRetail
         private void comboBox1_DropDownClosed(object sender, EventArgs e)
         {
             valdLand = comboBox1.SelectedItem as string;
+            KpiTotalSalePerPopulation();
         }
 
         private void comboBox2_DropDownClosed(object sender, EventArgs e)

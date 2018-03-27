@@ -18,6 +18,7 @@ namespace TestingOnlineRetail
         private string land;
         private string region;
         private int population;
+        private double totalPricePerPop;
 
 
         public InvoiceRows
@@ -67,6 +68,18 @@ namespace TestingOnlineRetail
             price = unitPrice;
         }
 
+        public InvoiceRows
+            (
+            float totPrice,
+            string country,
+            string sss
+
+            )
+        {
+            land = country;
+            totalPricePerPop = totPrice;        
+        }
+
 
         public int InvoiceNum
         {
@@ -111,5 +124,6 @@ namespace TestingOnlineRetail
 
         public string Region { get => region; set => region = value; }
         public int Population { get => population; set => population = value; }
+        public double TotalPricePerPop { get => totalPricePerPop; set => totalPricePerPop = value; }
     }
 }
