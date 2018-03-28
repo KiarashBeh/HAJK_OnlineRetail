@@ -18,23 +18,21 @@ namespace TestingOnlineRetail
     {
         SqlConnection conn = new SqlConnection();
         SqlDataReader myReader;
-
-        static DateTime StartDate = Convert.ToDateTime( "2010-12-01 08:26:00.000");
-        static DateTime EndDate = Convert.ToDateTime("2011-12-09 12:50:00.000");
-
+         
         //Lista för att fylla combobox med val av länder.
         List<InvoiceRows> World = new List<InvoiceRows>();
         //Olika variabler för olika val
         private string topOrBot;
         private string valdLand;
         //SQL querie för top 5 respektive bot 5 länder per försäljning.
-        private string topFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 where InvoiceDate > '"+StartDate+ "' and InvoiceDate < '" + EndDate + "' group by Country order by 'Total Sales' desc";
-        private string botFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 where InvoiceDate > '2010-12-01 08:26:00.000' and InvoiceDate < '2011-12-09 12:50:00.000' group by Country order by 'Total Sales' asc";
+        private string topFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' desc";
+        private string botFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' asc";
         private string valdTopBot;
         //SQL querie för top 5 respektive bot 5 produkter.
         private string topProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] desc";
         private string botProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] asc";
         string valdTopBotProd;
+        string prodTitle = "Top 5";
         //SQL querie för att få fram total försäljning per år och månad.
         private string salesPerYear = "select CONVERT(date, InvoiceDate) as dagar, sum(Quantity*UnitPrice) as 'TotalSales' from OnlineRetail2 group by CONVERT(date, InvoiceDate) order by CONVERT(date, InvoiceDate), TotalSales";
         //SQL querie för country, population och försäljning per capita.
@@ -68,6 +66,7 @@ namespace TestingOnlineRetail
         private void Form1_Load(object sender, EventArgs e)
         {
             InitData();
+            this.BackColor = Color.White;
         }
 
         private SqlDataReader openConnection(string Name)
@@ -262,30 +261,33 @@ namespace TestingOnlineRetail
             chart1.Series.Add("Series1");
             chart1.ChartAreas.Clear();
             chart1.ChartAreas.Add("ChartArea1");
-
-           StartDate = DateTime.Parse(dateTimePicker1.Text);
-           EndDate = DateTime.Parse(dateTimePicker2.Text);
-            
+                                 
 
             List<InvoiceRows> ChartList = getTopCountries();
 
             var datapoints = from asd in ChartList
                              select new { asd.Country, asd.UnitPrice, asd.AllDays };
-
-            var salePerDay = from das in datapoints
-                             where das.AllDays < EndDate
-                             where das.AllDays >= StartDate
-                             select das;
-
+                        
             foreach (var sales in datapoints)
             {
                 chart1.Series["Series1"].Points.AddXY(sales.Country, sales.UnitPrice);
             }
             chart1.Series["Series1"].ChartType = SeriesChartType.Column;
+            chart1.Series["Series1"].IsVisibleInLegend = false;
+            chart1.Titles.Clear();
+            chart1.Titles.Add(prodTitle + " Countries");
+            chart1.ChartAreas["ChartArea1"].BackColor = Color.WhiteSmoke;
+            chart1.Series["Series1"].Color = Color.DeepSkyBlue;
+            chart1.Series["Series1"].BorderWidth = 1;
+            chart1.Series["Series1"].BorderColor = Color.DarkBlue;
+            chart1.ChartAreas["ChartArea1"].AxisX.MajorGrid.LineColor = Color.LightGray;
+            chart1.ChartAreas["ChartArea1"].AxisY.MajorGrid.LineColor = Color.LightGray;
+
+
             //chart1.ChartAreas[0].AxisX.Minimum = StartDate.ToOADate();
             //chart1.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
         }
-        
+
         //Andra charten som visar top eller bot produkter
         private void SecondChart()
         {
@@ -309,6 +311,19 @@ namespace TestingOnlineRetail
                 chart2.Series["Series1"].Points.AddXY(sales.Description, sales.UnitPrice);
             }
             chart2.Series["Series1"].ChartType = SeriesChartType.Column;
+            chart2.Series["Series1"].IsVisibleInLegend = false;
+            chart2.Titles.Clear();
+            chart2.Titles.Add(prodTitle + " Products");
+            chart2.Series["Series1"].Color = Color.DeepSkyBlue;
+            chart2.Series["Series1"].BorderWidth = 1;
+            chart2.Series["Series1"].BorderColor = Color.DarkBlue;
+            chart2.ChartAreas["ChartArea1"].BackColor = Color.WhiteSmoke;
+            chart2.ChartAreas["ChartArea1"].AxisX.MajorGrid.LineColor = Color.LightGray;
+            chart2.ChartAreas["ChartArea1"].AxisY.MajorGrid.LineColor = Color.LightGray;
+
+
+
+
         }
 
         private void ThirdChart()
@@ -336,29 +351,37 @@ namespace TestingOnlineRetail
             chart3.ChartAreas["ChartArea1"].AxisY.MajorGrid.LineColor = Color.LightGray;
             chart3.ChartAreas[0].AxisX.Minimum = StartDate.ToOADate();
             chart3.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
-            chart3.Series["Series1"].IsVisibleInLegend = false;
-            chart3.Legends["Legend1"].IsDockedInsideChartArea = true;
-            chart3.Legends["Legend1"].DockedToChartArea = "ChartArea1";
+            chart3.Series["Series1"].IsVisibleInLegend = false;            
             chart3.Titles.Add("Sales timeline");
+            chart3.Series["Series1"].BorderWidth = 2;
+            chart3.Series["Series1"].Color = Color.DeepSkyBlue;
+            chart3.ChartAreas["ChartArea1"].BackColor = Color.WhiteSmoke;
 
 
 
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-            FirstChart();
-            SecondChart();
-            
-        }       
+      
 
         //Välj land i dropdown lista och sedan sätts värdet till variabeln valdLand som string
         private void comboBox1_DropDownClosed(object sender, EventArgs e)
         {
             valdLand = comboBox1.SelectedItem as string;
             KpiTotalSalePerPopulation();
+            label4.Text = valdLand;
 
+            if (valdLand == "Unspecified" || valdLand == "European Community")
+            {
+                label1.Text = "Total sales";
+                textBox2.Visible = false;
+                label2.Visible = false;
+            }
+            else
+            {
+                label1.Text = "Sales per Capita";
+                textBox2.Visible = true;
+                label2.Visible = true;
+            }
         }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -376,11 +399,15 @@ namespace TestingOnlineRetail
             {
                 valdTopBot = topFive;
                 valdTopBotProd = topProd;
+                chart2.Titles.Clear();
+                prodTitle = "Top 5";
             }
             else
             {
                 valdTopBot = botFive;
                 valdTopBotProd = botProd;
+                chart2.Titles.Clear();
+                prodTitle = "Bot 5";
             }
 
             FirstChart();
