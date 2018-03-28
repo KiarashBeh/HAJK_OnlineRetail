@@ -117,7 +117,7 @@ namespace TestingOnlineRetail
                     totalSalePerPopulation = item.TotalPricePerPop;
                 
             }
-            
+            textBox1.Text = totalSalePerPopulation.ToString();
 
         }
 
@@ -190,9 +190,8 @@ namespace TestingOnlineRetail
 
             return topProduct;
         }
-
-
-        /*private List<InvoiceRows> GetList()
+        
+        private List<InvoiceRows> GetList()
         {
             List<InvoiceRows> fillOrderLines = new List<InvoiceRows>();
         
@@ -250,9 +249,7 @@ namespace TestingOnlineRetail
             }
             return fillOrderLines;
 
-        }*/
-
-
+        }
 
         private void FirstChart()
         {
@@ -307,6 +304,7 @@ namespace TestingOnlineRetail
 
             FirstChart();
             SecondChart();
+            
 
         }
 
