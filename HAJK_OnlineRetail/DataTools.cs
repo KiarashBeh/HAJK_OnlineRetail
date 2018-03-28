@@ -13,10 +13,13 @@ namespace HAJK_OnlineRetail
     public static class DataTools
     {
         //JR method att fylla en list med alla rader från databas
+        //
         internal static List<InvoiceRows> GetInvoiceRows(string inputQuery)
         {
+            //medlemsvariabler
             List<InvoiceRows> listRow = new List<InvoiceRows>();
 
+            //connection
             string sConnectionString = "Data Source =LAPTOP2\\TESTSQL; Initial Catalog =OnlineRetail; Integrated Security =True;";
             SqlConnection sqlConnection = new SqlConnection(sConnectionString);
             try
@@ -63,7 +66,7 @@ namespace HAJK_OnlineRetail
         //JR method at fylla en list av country sales
         internal static List<Country> GetCountrySales(string myQuery)
         {
-            //medlems variabler
+            //medlemsvariabler
             List<Country> outList = new List<Country>();
             float totalSales = 0;
 
@@ -113,37 +116,7 @@ namespace HAJK_OnlineRetail
             {
                 sqlConnection.Close();
             }
-
             return outList;
-        }
-
-    }
-
-    class Country
-    {
-        private string countryName;
-        private float sales;
-        private float procent;
-
-        public Country(string CountryName, float Sales, float Procent)
-        {
-            countryName = CountryName;
-            sales = Sales;
-        }
-        public string CountryName
-        {
-            get { return countryName; }
-            set { countryName = value; }
-        }
-        public float Sales
-        {
-            get { return sales; }
-            set { sales = value; }
-        }
-        public float Procent
-        { 
-            get { return procent; }
-            set { procent = value; }
         }
     }
 }
