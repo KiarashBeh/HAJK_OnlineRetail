@@ -17,21 +17,29 @@ namespace TestingOnlineRetail
     public partial class Form1 : Form
     {
         SqlConnection conn = new SqlConnection();
+        SqlDataReader myReader;
+
+        static DateTime StartDate = Convert.ToDateTime( "2010-12-01 08:26:00.000");
+        static DateTime EndDate = Convert.ToDateTime("2011-12-09 12:50:00.000");
+
+        //Lista för att fylla combobox med val av länder.
+        List<InvoiceRows> World = new List<InvoiceRows>();
         //Olika variabler för olika val
-        private string firstDate;
-        private string lastDate;
         private string topOrBot;
         private string valdLand;
         //SQL querie för top 5 respektive bot 5 länder per försäljning.
-        private string topFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' desc";
-        private string botFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' asc";
+        private string topFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 where InvoiceDate > '"+StartDate+ "' and InvoiceDate < '" + EndDate + "' group by Country order by 'Total Sales' desc";
+        private string botFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 where InvoiceDate > '2010-12-01 08:26:00.000' and InvoiceDate < '2011-12-09 12:50:00.000' group by Country order by 'Total Sales' asc";
         private string valdTopBot;
         //SQL querie för top 5 respektive bot 5 produkter.
         private string topProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] desc";
         private string botProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] asc";
         string valdTopBotProd;
         //SQL querie för att få fram total försäljning per år och månad.
-        private string salesPerYear = "Select cast(datepart(year, InvoiceDate) as varchar) + '.' + cast(datepart(month, InvoiceDate) as varchar) + '.' + cast(datepart(day, InvoiceDate)as varchar) as dagar, sum(Quantity*UnitPrice) as 'TotalSales' from OnlineRetail2 group by datepart(month, InvoiceDate),datepart(year, InvoiceDate),datepart(day, InvoiceDate) order by datepart(year, InvoiceDate), datepart(month, InvoiceDate),datepart(day, InvoiceDate)";
+        private string salesPerYear = "select CONVERT(date, InvoiceDate) as dagar, sum(Quantity*UnitPrice) as 'TotalSales' from OnlineRetail2 group by CONVERT(date, InvoiceDate) order by CONVERT(date, InvoiceDate), TotalSales";
+        //SQL querie för country, population och försäljning per capita.
+        private string totalSaleForEachCountry = "SELECT Country, Population, SUM(quantity * UnitPrice)/Population As 'TotalSalePerPopulation' FROM[OnlineRetail].[dbo].[OnlineRetail2] group by Population, Country order by [TotalSalePerPopulation]  Desc";
+        private double totalSalePerPopulation;
 
 
         public Form1()
@@ -49,6 +57,8 @@ namespace TestingOnlineRetail
             getTopCountries();
             getTopProduct();
             getSalesPerYear();
+            KpiTotalSalePerPopulation();
+            Countries();
 
             FirstChart();
             SecondChart();
@@ -58,6 +68,50 @@ namespace TestingOnlineRetail
         private void Form1_Load(object sender, EventArgs e)
         {
             InitData();
+        }
+
+        private SqlDataReader openConnection(string Name)
+        {
+            conn.Open();
+            SqlCommand myCommand2 = new SqlCommand(Name, conn);
+            myReader = myCommand2.ExecuteReader();
+            return myReader;
+        }
+
+        private List<InvoiceRows> getTotalSalePerPop()
+        {
+            List<InvoiceRows> totalSale = new List<InvoiceRows>();
+
+            try
+            {
+                //openConnection(totalSaleForEachCountry);
+                conn.Open();
+                SqlCommand myCommand2 = new SqlCommand(totalSaleForEachCountry, conn);
+                myReader = myCommand2.ExecuteReader();
+
+                float totalSale1;
+                string Country;
+
+                while (myReader.Read())
+                {
+                    Country = myReader["Country"].ToString();
+                    float.TryParse(myReader["TotalSalePerPopulation"].ToString(), out totalSale1);
+
+                    InvoiceRows tempRows = new InvoiceRows(totalSale1, Country, "sss");
+
+                    totalSale.Add(tempRows);
+                }
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.ToString());
+            }
+            finally
+            {
+                conn.Close();
+            }
+
+            return totalSale;
         }
 
         private List<InvoiceRows> getSalesPerYear()
@@ -70,21 +124,17 @@ namespace TestingOnlineRetail
                 SqlCommand myCommand2 = new SqlCommand(salesPerYear, conn);
                 SqlDataReader myReader2 = myCommand2.ExecuteReader();
 
-                int years;
-                int months;
-                int days;
+                
                 float sales;
-                int allDays;
+                DateTime allDays;
 
                 while (myReader2.Read())
                 {
-                    //int.TryParse(myReader2["artal"].ToString(), out years);
-                    //int.TryParse(myReader2["manad"].ToString(), out months);
-                    //int.TryParse(myReader2["dag"].ToString(), out days);
-                    int.TryParse(myReader2["dagar"].ToString(), out allDays);
+                   
+                    DateTime.TryParse(myReader2["dagar"].ToString(), out allDays);
                     float.TryParse(myReader2["TotalSales"].ToString(), out sales);
 
-                    InvoiceRows tempRows = new InvoiceRows(allDays.ToString(), sales);
+                    InvoiceRows tempRows = new InvoiceRows(allDays, sales);
 
                     totalSales.Add(tempRows);
                 }
@@ -171,69 +221,38 @@ namespace TestingOnlineRetail
             }
 
             return topProduct;
-        }
+        }        
 
-
-        /*private List<InvoiceRows> GetList()
+        private void KpiTotalSalePerPopulation()
         {
-            List<InvoiceRows> fillOrderLines = new List<InvoiceRows>();
-        
-        try
-            { 
-                conn.Open();
-                SqlCommand myCommand = new SqlCommand("select * from OnlineRetail2;", conn);
+            List<InvoiceRows> ChartList1 = getTotalSalePerPop();
+            List<InvoiceRows> TotSale = getSalesPerYear();
+            DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
+            DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
+            double totalDays = (EndDate - StartDate).TotalDays;
+            float totalSale = 0;
 
-                SqlDataReader myReader = myCommand.ExecuteReader();
-                //MessageBox.Show("Connection fungerar");
-
-                int invoiceNum;
-                string stockCode;
-                string description;
-                int quantity;
-                DateTime invoiceDate;
-                float unitPrice;
-                int customerId;
-                string country;
-                string region;
-                int population;
-
-                while (myReader.Read())
-                {
-                    int.TryParse(myReader["invoiceNo"].ToString(), out invoiceNum);
-                    stockCode =  myReader["StockCode"].ToString();
-                    description = myReader["Description"].ToString();
-                    int.TryParse(myReader["Quantity"].ToString(), out quantity);
-                    DateTime.TryParse(myReader["InvoiceDate"].ToString(), out invoiceDate);
-                    float.TryParse(myReader["UnitPrice"].ToString(), out unitPrice);
-                    int.TryParse(myReader["CustomerID"].ToString(), out customerId);
-                    country = myReader["Country"].ToString();
-                    region = myReader["Region"].ToString();
-                    int.TryParse(myReader["Population"].ToString(), out population);
-
-
-                    InvoiceRows temRows = new InvoiceRows(
-                        invoiceNum, stockCode,
-                        description, quantity,
-                        invoiceDate, unitPrice,
-                        customerId, country,
-                        region, population);
-
-                    fillOrderLines.Add(temRows);
-                }
-            }
-            catch (Exception e)
+            foreach (var item in ChartList1)
             {
+                if (item.Country.ToString() == valdLand)
+                    totalSalePerPopulation = item.TotalPricePerPop;
 
-                MessageBox.Show(e.ToString());
             }
-            finally
+
+            var salePerDay = from das in TotSale
+                             where das.AllDays < EndDate
+                             where das.AllDays >= StartDate
+                             select das;
+
+            foreach (var item in salePerDay)
             {
-                conn.Close();
-            }
-            return fillOrderLines;
+                totalSale += item.UnitPrice;
+            }           
 
-        }*/
-
+            textBox1.Text = (Math.Round(totalSalePerPopulation, 5)).ToString();
+            textBox2.Text = (Convert.ToDouble(textBox1.Text) * 1.05).ToString();
+            textBox3.Text = (totalSale / totalDays).ToString();
+        }
 
         //Första chart som visar top eller bot länder.
         private void FirstChart()
@@ -244,14 +263,19 @@ namespace TestingOnlineRetail
             chart1.ChartAreas.Clear();
             chart1.ChartAreas.Add("ChartArea1");
 
-            DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
-            DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
+           StartDate = DateTime.Parse(dateTimePicker1.Text);
+           EndDate = DateTime.Parse(dateTimePicker2.Text);
             
 
             List<InvoiceRows> ChartList = getTopCountries();
 
             var datapoints = from asd in ChartList
-                             select new { asd.Country, asd.UnitPrice };
+                             select new { asd.Country, asd.UnitPrice, asd.AllDays };
+
+            var salePerDay = from das in datapoints
+                             where das.AllDays < EndDate
+                             where das.AllDays >= StartDate
+                             select das;
 
             foreach (var sales in datapoints)
             {
@@ -289,7 +313,15 @@ namespace TestingOnlineRetail
 
         private void ThirdChart()
         {
+            chart3.Series.Clear();
+            chart3.Series.Add("Series1");
+            chart3.ChartAreas.Clear();
+            chart3.ChartAreas.Add("ChartArea1");
+            chart3.Titles.Clear();
             List<InvoiceRows> salesList = getSalesPerYear();
+
+            DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
+            DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
             //Här pysslar jag just nu med om det går att få fram 
             var datapoints = from asgag in salesList
                              select new {  asgag.AllDays, asgag.UnitPrice };
@@ -299,6 +331,18 @@ namespace TestingOnlineRetail
                 chart3.Series["Series1"].Points.AddXY(sales.AllDays, sales.UnitPrice);
             }
             chart3.Series["Series1"].ChartType = SeriesChartType.Line;
+            chart3.ChartAreas["ChartArea1"].AxisX.Interval = 20;
+            chart3.ChartAreas["ChartArea1"].AxisX.MajorGrid.LineColor = Color.LightGray;
+            chart3.ChartAreas["ChartArea1"].AxisY.MajorGrid.LineColor = Color.LightGray;
+            chart3.ChartAreas[0].AxisX.Minimum = StartDate.ToOADate();
+            chart3.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
+            chart3.Series["Series1"].IsVisibleInLegend = false;
+            chart3.Legends["Legend1"].IsDockedInsideChartArea = true;
+            chart3.Legends["Legend1"].DockedToChartArea = "ChartArea1";
+            chart3.Titles.Add("Sales timeline");
+
+
+
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -312,8 +356,16 @@ namespace TestingOnlineRetail
         //Välj land i dropdown lista och sedan sätts värdet till variabeln valdLand som string
         private void comboBox1_DropDownClosed(object sender, EventArgs e)
         {
-            valdLand = comboBox1.SelectedItem as string; 
+            valdLand = comboBox1.SelectedItem as string;
+            KpiTotalSalePerPopulation();
+
         }
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            valdLand = comboBox1.SelectedItem as string;
+            KpiTotalSalePerPopulation();
+        }
+      
 
         //Välj antingen bot eller top för att bestämma vilken querie som ska köras och sedan uppdateras chartsen.
         private void comboBox2_DropDownClosed(object sender, EventArgs e)
@@ -333,6 +385,35 @@ namespace TestingOnlineRetail
 
             FirstChart();
             SecondChart();
+        }
+
+        private void Countries()
+        {
+
+            World = getTotalSalePerPop();
+
+            var getCountries = World.Select(s => s.Country).Distinct();
+
+            foreach (var x in getCountries)
+            {
+                comboBox1.Items.Add(x);
+            }
+            ///World.Add(Enumerable.Cast<string>(getCountries).ToList());
+
+        }
+
+        private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
+        {
+            FirstChart();
+            ThirdChart();
+            KpiTotalSalePerPopulation();
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
+            FirstChart();
+            ThirdChart();
+            KpiTotalSalePerPopulation();
         }
     }
 }

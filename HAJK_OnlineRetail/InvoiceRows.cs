@@ -20,10 +20,9 @@ namespace TestingOnlineRetail
         private int population;
         private int year;
         private int month;
-        private int day;
-        private int allDays;
-
-
+        private DateTime allDays;
+        private double totalPricePerPop;
+        private float sales;
 
         public InvoiceRows
             (
@@ -75,15 +74,27 @@ namespace TestingOnlineRetail
 
         public InvoiceRows
             (
-            int day,
-            float sales,
-            int pop
+            DateTime day,
+            float sales
             )
         {
             AllDays = day;
             price = sales;
             
         }
+
+        public InvoiceRows
+            (
+            float totPrice,
+            string country,
+            string sss
+            )
+        {
+            land = country;
+            TotalPricePerPop = totPrice;
+        }
+
+        
 
         public int InvoiceNum
         {
@@ -130,7 +141,7 @@ namespace TestingOnlineRetail
         public int Population { get => population; set => population = value; }
         public int Year { get => year; set => year = value; }
         public int Month { get => month; set => month = value; }
-        public int Day { get => day; set => day = value; }
-        public int AllDays { get => allDays; set => allDays = value; }
+        public DateTime AllDays { get => allDays; set => allDays = value; }
+        public double TotalPricePerPop { get => totalPricePerPop; set => totalPricePerPop = value; }
     }
 }
