@@ -44,7 +44,7 @@ namespace TestingOnlineRetail
         {
             InitializeComponent();
 
-            conn.ConnectionString = "Data Source=ALPHAG33K\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
+            conn.ConnectionString = "Data Source=LAPTOP2\\TESTSQL;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
         }
 
         //Här samlas det som ska köras när Form1 laddas in.
@@ -184,7 +184,7 @@ namespace TestingOnlineRetail
             return topCountry;            
         }
 
-        //Hämta top respektive bot pordukter beroende på vilket val man gjort (valdTopBotProd är kopplat till sql queries ovan).
+        //Hämta top respektive bot produkter beroende på vilket val man gjort (valdTopBotProd är kopplat till sql queries ovan).
         private List<InvoiceRows> getTopProduct()
         {
             List<InvoiceRows> topProduct = new List<InvoiceRows>();
@@ -281,9 +281,6 @@ namespace TestingOnlineRetail
             chart1.ChartAreas["ChartArea1"].AxisX.MajorGrid.LineColor = Color.LightGray;
             chart1.ChartAreas["ChartArea1"].AxisY.MajorGrid.LineColor = Color.LightGray;
 
-
-            //chart1.ChartAreas[0].AxisX.Minimum = StartDate.ToOADate();
-            //chart1.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
         }
 
         //Andra charten som visar top eller bot produkter
@@ -423,7 +420,7 @@ namespace TestingOnlineRetail
             {
                 comboBox1.Items.Add(x);
             }
-            ///World.Add(Enumerable.Cast<string>(getCountries).ToList());
+
 
         }
 
