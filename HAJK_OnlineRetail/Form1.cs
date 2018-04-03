@@ -44,7 +44,7 @@ namespace TestingOnlineRetail
         {
             InitializeComponent();
 
-            conn.ConnectionString = "Data Source=LAPTOP-7AL6OH88\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
+            conn.ConnectionString = "Data Source=KiarashPc;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
         }
 
         //Här samlas det som ska köras när Form1 laddas in.
@@ -84,10 +84,7 @@ namespace TestingOnlineRetail
 
             try
             {
-                //openConnection(totalSaleForEachCountry);
-                conn.Open();
-                SqlCommand myCommand2 = new SqlCommand(totalSaleForEachCountry, conn);
-                myReader = myCommand2.ExecuteReader();
+                openConnection(totalSaleForEachCountry);
 
                 float totalSale1;
                 string Country;
@@ -120,19 +117,16 @@ namespace TestingOnlineRetail
 
             try
             {
-                conn.Open();
-                SqlCommand myCommand2 = new SqlCommand(salesPerYear, conn);
-                SqlDataReader myReader2 = myCommand2.ExecuteReader();
-
+                openConnection(salesPerYear);
                 
                 float sales;
                 DateTime allDays;
 
-                while (myReader2.Read())
+                while (myReader.Read())
                 {
                    
-                    DateTime.TryParse(myReader2["dagar"].ToString(), out allDays);
-                    float.TryParse(myReader2["TotalSales"].ToString(), out sales);
+                    DateTime.TryParse(myReader["dagar"].ToString(), out allDays);
+                    float.TryParse(myReader["TotalSales"].ToString(), out sales);
 
                     InvoiceRows tempRows = new InvoiceRows(allDays, sales);
 
@@ -157,18 +151,16 @@ namespace TestingOnlineRetail
             List<InvoiceRows> topCountry = new List<InvoiceRows>();
 
             try
-            { 
-                conn.Open();
-                SqlCommand myCommand2 = new SqlCommand(valdTopBot, conn);
-                SqlDataReader myReader2 = myCommand2.ExecuteReader();
+            {
+                openConnection(valdTopBot);
 
                 float unitPrice;
                 string Country;
 
-                while (myReader2.Read())
+                while (myReader.Read())
                 {
-                    float.TryParse(myReader2["Total Sales"].ToString(), out unitPrice);
-                    Country = myReader2["Country"].ToString();
+                    float.TryParse(myReader["Total Sales"].ToString(), out unitPrice);
+                    Country = myReader["Country"].ToString();
 
                     InvoiceRows tempRows = new InvoiceRows(Country, unitPrice);
 
@@ -194,9 +186,7 @@ namespace TestingOnlineRetail
 
             try
             {
-                conn.Open();
-                SqlCommand myCommand = new SqlCommand(valdTopBotProd, conn);
-                SqlDataReader myReader = myCommand.ExecuteReader();
+                openConnection(valdTopBotProd);
 
                 float unitPrice;
                 string Description;
