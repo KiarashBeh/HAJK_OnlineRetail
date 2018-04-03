@@ -44,11 +44,11 @@ namespace TestingOnlineRetail
         {
             InitializeComponent();
 
-            conn.ConnectionString = "Data Source=LAPTOP-7AL6OH88\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
+            conn.ConnectionString = "Data Source=ALPHAG33K\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
         }
 
         //Här samlas det som ska köras när Form1 laddas in.
-        private void InitData()
+        private void InitData()  //Vi samlar alla metoder och variabler som används för att initiera datan
         {
 
             valdTopBotProd = topProd;
@@ -60,13 +60,13 @@ namespace TestingOnlineRetail
             Countries();
         }
 
-        // Metod för att rita grafer
+        
         private void DrawChart()
         { 
             FirstChart();
             SecondChart();
             ThirdChart();
-        }
+        } // Vi samlar alla metoder för att rita grafer
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -75,7 +75,7 @@ namespace TestingOnlineRetail
             this.BackColor = Color.White;
         }
 
-        private SqlDataReader openConnection(string Name)
+        private SqlDataReader openConnection(string Name) //Metod för att sammankoppla inputparameter med connection string
         {
             conn.Open();
             SqlCommand myCommand2 = new SqlCommand(Name, conn);
@@ -83,9 +83,9 @@ namespace TestingOnlineRetail
             return myReader;
         }
 
-        private List<InvoiceRows> getTotalSalePerPop()
+        private List<InvoiceRows> getTotalSalePerPop() //Metod för att ta fram total försäljning per invånare
         {
-            List<InvoiceRows> totalSale = new List<InvoiceRows>();
+            List<InvoiceRows> totalSale = new List<InvoiceRows>(); 
 
             try
             {
@@ -116,7 +116,7 @@ namespace TestingOnlineRetail
             return totalSale;
         }
 
-        private List<InvoiceRows> getSalesPerYear()
+        private List<InvoiceRows> getSalesPerYear() //Metod för att ta fram total försäljning mellan två datum. Används för timelinegraf.
             {
             List<InvoiceRows> totalSales = new List<InvoiceRows>();
 
@@ -218,7 +218,7 @@ namespace TestingOnlineRetail
             return topProduct;
         }        
 
-        private void KpiTotalSalePerPopulation()
+        private void KpiTotalSalePerPopulation() //Metod för att filtrera ut land till totalförsäljning och KPI samt räkna ut sales per day mellan valt datum.
         {
             List<InvoiceRows> ChartList1 = getTotalSalePerPop();
             List<InvoiceRows> TotSale = getSalesPerYear();
