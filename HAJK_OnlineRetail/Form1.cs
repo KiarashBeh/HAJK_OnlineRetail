@@ -58,7 +58,9 @@ namespace TestingOnlineRetail
             getSalesPerYear();
             KpiTotalSalePerPopulation();
             Countries();
-
+        }
+        private void DrawChart()
+        { 
             FirstChart();
             SecondChart();
             ThirdChart();
@@ -67,6 +69,7 @@ namespace TestingOnlineRetail
         private void Form1_Load(object sender, EventArgs e)
         {
             InitData();
+            DrawChart();
             this.BackColor = Color.White;
         }
 
