@@ -59,6 +59,8 @@ namespace TestingOnlineRetail
             KpiTotalSalePerPopulation();
             Countries();
         }
+
+        // Metod för att rita grafer
         private void DrawChart()
         { 
             FirstChart();
