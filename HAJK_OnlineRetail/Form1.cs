@@ -44,7 +44,7 @@ namespace TestingOnlineRetail
         {
             InitializeComponent();
 
-            conn.ConnectionString = "Data Source=LAPTOP-7AL6OH88\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
+            conn.ConnectionString = "Data Source=ALPHAG33K\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
         }
 
         //Här samlas det som ska köras när Form1 laddas in.
