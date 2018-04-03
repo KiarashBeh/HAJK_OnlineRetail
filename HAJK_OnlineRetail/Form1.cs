@@ -47,7 +47,8 @@ namespace TestingOnlineRetail
             conn.ConnectionString = "Data Source=LAPTOP-7AL6OH88\\SQL2017;Initial Catalog=OnlineRetail;Integrated Security=True;connection timeout=10";
         }
 
-        private void InitData()//Här samlas det som ska köras när Form1 laddas in.
+        //Här samlas det som ska köras när Form1 laddas in.
+        private void InitData()
         {
 
             valdTopBotProd = topProd;
@@ -228,6 +229,7 @@ namespace TestingOnlineRetail
             List<InvoiceRows> TotSale = getSalesPerYear();
             DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
             DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
+
             double totalDays = (EndDate - StartDate).TotalDays;
             float totalSale = 0;
 
@@ -237,7 +239,7 @@ namespace TestingOnlineRetail
                     totalSalePerPopulation = item.TotalPricePerPop;
 
             }
-
+            
             var salePerDay = from das in TotSale
                              where das.AllDays < EndDate
                              where das.AllDays >= StartDate
@@ -250,7 +252,8 @@ namespace TestingOnlineRetail
 
             textBox1.Text = (Math.Round(totalSalePerPopulation, 5)).ToString();
             textBox2.Text = (Convert.ToDouble(textBox1.Text) * 1.05).ToString();
-            textBox3.Text = (totalSale / totalDays).ToString();
+            textBox3.Text = (Math.Round((totalSale / totalDays), 0)).ToString();
+            textBox4.Text = totalSale.ToString();
         }
 
         //Första chart som visar top eller bot länder.
@@ -321,11 +324,9 @@ namespace TestingOnlineRetail
             chart2.ChartAreas["ChartArea1"].AxisX.MajorGrid.LineColor = Color.LightGray;
             chart2.ChartAreas["ChartArea1"].AxisY.MajorGrid.LineColor = Color.LightGray;
 
-
-
-
         }
 
+        //Linechart som visar hur försäljningen går upp och ner på en timeline.
         private void ThirdChart()
         {
             chart3.Series.Clear();
@@ -337,7 +338,7 @@ namespace TestingOnlineRetail
 
             DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
             DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
-            //Här pysslar jag just nu med om det går att få fram 
+
             var datapoints = from asgag in salesList
                              select new {  asgag.AllDays, asgag.UnitPrice };
 
@@ -352,13 +353,12 @@ namespace TestingOnlineRetail
             chart3.ChartAreas[0].AxisX.Minimum = StartDate.ToOADate();
             chart3.ChartAreas[0].AxisX.Maximum = EndDate.ToOADate();
             chart3.Series["Series1"].IsVisibleInLegend = false;            
-            chart3.Titles.Add("Sales timeline");
+            chart3.Titles.Add("Total Sales timeline");
             chart3.Series["Series1"].BorderWidth = 2;
             chart3.Series["Series1"].Color = Color.DeepSkyBlue;
             chart3.ChartAreas["ChartArea1"].BackColor = Color.WhiteSmoke;
 
-
-
+                        
         }
 
       
@@ -370,6 +370,7 @@ namespace TestingOnlineRetail
             KpiTotalSalePerPopulation();
             label4.Text = valdLand;
 
+            //Eftersom country "Unspecified" och European Community" inte har någon population så sätter vi dessa värden till totalförsäljning.
             if (valdLand == "Unspecified" || valdLand == "European Community")
             {
                 label1.Text = "Total sales";
@@ -383,12 +384,13 @@ namespace TestingOnlineRetail
                 label2.Visible = true;
             }
         }
+
+        //Välj vilket lands försäljning per capita du vill se.
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             valdLand = comboBox1.SelectedItem as string;
             KpiTotalSalePerPopulation();
-        }
-      
+        }      
 
         //Välj antingen bot eller top för att bestämma vilken querie som ska köras och sedan uppdateras chartsen.
         private void comboBox2_DropDownClosed(object sender, EventArgs e)
@@ -414,6 +416,7 @@ namespace TestingOnlineRetail
             SecondChart();
         }
 
+        //Lägg till länderna från databasen i combobox.
         private void Countries()
         {
 
@@ -429,16 +432,15 @@ namespace TestingOnlineRetail
 
         }
 
+        //När värdet i datumbäljaren ändras så ändras även linechart och försäljning per capita.
         private void dateTimePicker2_ValueChanged(object sender, EventArgs e)
         {
-            FirstChart();
             ThirdChart();
             KpiTotalSalePerPopulation();
         }
 
         private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
         {
-            FirstChart();
             ThirdChart();
             KpiTotalSalePerPopulation();
         }
