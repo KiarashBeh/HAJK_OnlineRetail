@@ -19,8 +19,6 @@ namespace TestingOnlineRetail
         SqlConnection conn = new SqlConnection();
         SqlDataReader myReader;
 
-        static DateTime StartDate = Convert.ToDateTime( "2010-12-01 08:26:00.000");
-        static DateTime EndDate = Convert.ToDateTime("2011-12-09 12:50:00.000");
 
         //Lista för att fylla combobox med val av länder.
         List<InvoiceRows> World = new List<InvoiceRows>();
@@ -28,8 +26,8 @@ namespace TestingOnlineRetail
         private string topOrBot;
         private string valdLand;
         //SQL querie för top 5 respektive bot 5 länder per försäljning.
-        private string topFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 where InvoiceDate > '"+StartDate+ "' and InvoiceDate < '" + EndDate + "' group by Country order by 'Total Sales' desc";
-        private string botFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 where InvoiceDate > '2010-12-01 08:26:00.000' and InvoiceDate < '2011-12-09 12:50:00.000' group by Country order by 'Total Sales' asc";
+        private string topFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' desc";
+        private string botFive = "Select top 5 sum(Quantity * UnitPrice) as 'Total Sales', Country from OnlineRetail2 group by Country order by 'Total Sales' asc";
         private string valdTopBot;
         //SQL querie för top 5 respektive bot 5 produkter.
         private string topProd = "select top 5 sum(UnitPrice) as TotalSales, sum([Quantity]) as 'Quantity', [Description] from OnlineRetail2 where UnitPrice > 0 and Quantity > 0 and Description not like '%postage%' and Description not like '%fee%' and Description not like '%manual%' and Description not like '%adjust%' group by[Description] order by[TotalSales] desc";
@@ -263,8 +261,8 @@ namespace TestingOnlineRetail
             chart1.ChartAreas.Clear();
             chart1.ChartAreas.Add("ChartArea1");
 
-           StartDate = DateTime.Parse(dateTimePicker1.Text);
-           EndDate = DateTime.Parse(dateTimePicker2.Text);
+            DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
+            DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
             
 
             List<InvoiceRows> ChartList = getTopCountries();
@@ -294,6 +292,7 @@ namespace TestingOnlineRetail
             chart2.Series.Add("Series1");
             chart2.ChartAreas.Clear();
             chart2.ChartAreas.Add("ChartArea1");
+            //chart2.ChartAreas["chartArea1"].BackColor = Color.LightBlue;
 
             DateTime StartDate = DateTime.Parse(dateTimePicker1.Text);
             DateTime EndDate = DateTime.Parse(dateTimePicker2.Text);
